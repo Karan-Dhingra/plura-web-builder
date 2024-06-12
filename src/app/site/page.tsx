@@ -22,7 +22,7 @@ export default async function Home() {
 
         <p className="text-center">Run your agency, in one place</p>
         <div className="bg-gradient-to-r from-primary to-secondary-foreground text-transparent bg-clip-text relative">
-          <h1 className="text-9xl font-bold text-center md:text-[300px]">
+          <h1 className="text-9xl font-bold text-center md:text-[250px]">
             Plura
           </h1>
         </div>
@@ -30,8 +30,8 @@ export default async function Home() {
           <Image
             src={"/assets/preview.png"}
             alt="banner image"
-            height={650}
-            width={650}
+            height={800}
+            width={800}
             className="rounded-tl-2xl rounded-tr-2xl border-2 border-muted"
           />
           <div className="bottom-0 top-[50%] bg-gradient-to-t dark:from-background left-0 right-0 absolute z-10"></div>
