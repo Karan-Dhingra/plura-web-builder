@@ -44,11 +44,11 @@ import { Button } from "../ui/button";
 import FileUpload from "../global/file-upload";
 import Loading from "../global/loading";
 import {
-    deleteAgency,
+  deleteAgency,
   initUser,
   saveActivityLogsNotification,
   updateAgencyDetails,
-  upsertAgency,
+  upsertAgency
 } from "@/lib/queries";
 
 type Props = {
@@ -124,6 +124,8 @@ const AgencyDetails = ({ data }: Props) => {
               state: values.zipCode,
             },
           }
+
+          console.log(bodyData)
   
         //   const customerResponse = await fetch('/api/stripe/create-customer', {
         //     method: 'POST',
@@ -138,7 +140,8 @@ const AgencyDetails = ({ data }: Props) => {
         }
   
         newUserData = await initUser({ role: 'AGENCY_OWNER' })
-        if (!data?.customerId && !custId) return
+        // if (!data?.customerId && !custId) return
+        console.log(newUserData)
   
         const response = await upsertAgency({
           id: data?.id ? data.id : v4(),
@@ -158,6 +161,7 @@ const AgencyDetails = ({ data }: Props) => {
           connectAccountId: '',
           goal: 5,
         })
+        console.log(response)
         toast({
           title: 'Created Agency',
         })
