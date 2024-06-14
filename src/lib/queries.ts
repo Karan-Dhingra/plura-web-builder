@@ -3,7 +3,7 @@
 import { clerkClient, currentUser } from '@clerk/nextjs'
 import { db } from './db';
 import { redirect } from 'next/navigation';
-import { Agency, Plan, SubAccount, User } from '@prisma/client';
+import { Agency, Plan, Role, SubAccount, User } from '@prisma/client';
 import { v4 } from 'uuid';
 
 interface Thing {
@@ -298,11 +298,15 @@ export const upsertSubAccount = async (subAccount: SubAccount) => {
         role: 'AGENCY_OWNER',
       },
     })
+
+    const passedAccount : Partial<Agency> = {...subAccount}
+    delete passedAccount.id;
+
     if (!agencyOwner) return console.log('🔴Erorr could not create subaccount')
     const permissionId = v4()
     const response = await db.subAccount.upsert({
       where: { id: subAccount.id },
-      update: subAccount,
+      update: passedAccount,
       create: {
         ...subAccount,
         Permissions: {
@@ -366,4 +370,127 @@ export const upsertSubAccount = async (subAccount: SubAccount) => {
       },
     })
     return response
-}  
+}
+
+export const updateUser = async (user: Partial<User>) => {
+  const response = await db.user.update({
+    where: { email: user.email },
+    data: { ...user },
+  })
+
+  await clerkClient.users.updateUserMetadata(response.id, {
+    privateMetadata: {
+      role: user.role || 'SUBACCOUNT_USER',
+    },
+  })
+
+  return response
+}
+
+export const getUserPermissions = async (userId: string) => {
+  const response = await db.user.findUnique({
+    where: { id: userId },
+    select: { Permissions: { include: { SubAccount: true } } },
+  })
+
+  return response
+}
+
+export const changeUserPermissions = async (
+  permissionId: string | undefined,
+  userEmail: string,
+  subAccountId: string,
+  permission: boolean
+) => {
+  try {
+    const response = await db.permissions.upsert({
+      where: { id: permissionId },
+      update: { access: permission },
+      create: {
+        access: permission,
+        email: userEmail,
+        subAccountId: subAccountId,
+      },
+    })
+    return response
+  } catch (error) {
+    console.log('🔴Could not change persmission', error)
+  }
+}
+
+export const getSubaccountDetails = async (subaccountId: string) => {
+  const response = await db.subAccount.findUnique({
+    where: {
+      id: subaccountId,
+    },
+  })
+  return response
+}
+
+export const deleteSubAccount = async (subaccountId: string) => {
+  const response = await db.subAccount.delete({
+    where: {
+      id: subaccountId,
+    },
+  })
+  return response
+}
+
+export const deleteUser = async (userId: string) => {
+  await clerkClient.users.updateUserMetadata(userId, {
+    privateMetadata: {
+      role: undefined,
+    },
+  })
+  const deletedUser = await db.user.delete({ where: { id: userId } })
+
+  return deletedUser
+}
+
+export const getUser = async (id: string) => {
+  const user = await db.user.findUnique({
+    where: {
+      id,
+    },
+  })
+
+  return user
+}
+
+export const sendInvitation = async (
+  role: Role,
+  email: string,
+  agencyId: string
+) => {
+  const resposne = await db.invitation.create({
+    data: { email, agencyId, role },
+  })
+
+  try {
+    const invitation = await clerkClient.invitations.createInvitation({
+      emailAddress: email,
+      redirectUrl: process.env.NEXT_PUBLIC_URL,
+      publicMetadata: {
+        throughInvitation: true,
+        role,
+      },
+    })
+  } catch (error) {
+    console.log(error)
+    throw error
+  }
+
+  return resposne
+}
+
+export const _getTicketsWithAllRelations = async (laneId: string) => {
+  const response = await db.ticket.findMany({
+    where: { laneId: laneId },
+    include: {
+      Assigned: true,
+      Customer: true,
+      Lane: true,
+    },
+  })
+  return response
+}

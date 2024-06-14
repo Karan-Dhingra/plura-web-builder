@@ -9,6 +9,7 @@ import clsx from 'clsx'
 import { AspectRatio } from '../ui/aspect-ratio'
 import Image from 'next/image'
 import { Popover, PopoverContent } from '../ui/popover'
+import { Separator } from '../ui/separator'
 import { PopoverTrigger } from '@radix-ui/react-popover'
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem } from '../ui/command'
 import { CommandList } from 'cmdk'
@@ -16,6 +17,7 @@ import Link from 'next/link'
 import { useModal } from '@/providers/modal-provider'
 import CustomModal from '../global/custom-modal'
 import SubAccountDetails from '../forms/subaccounts-details'
+import { icons } from '@/lib/constants'
 
 type Props = {
     defaultOpen?: boolean,
@@ -199,6 +201,37 @@ const MenuOptions = ({defaultOpen, subAccounts, sidebarLogo, sidebarOpt, details
                         }
                     </PopoverContent>
                 </Popover>
+                <p className="text-muted-foreground text-xs mb-2">MENU LINKS</p>
+                <Separator className='mb-4' />
+                <nav className='relative'>
+                    <Command className='rounded-lg overflow-visible bg-transparent'>
+                        <CommandInput placeholder='Search...' />
+                        <CommandList className='py-4 overflow-visible'>
+                            <CommandEmpty>No Results Found</CommandEmpty>
+                            <CommandGroup className='overflow-visible'>
+                                {sidebarOpt.map(sidebarOptions => {
+                                    let val;
+                                    const result = icons.find(icon => icon.value === sidebarOptions.icon)
+
+                                    if(result){
+                                        val = <result.path />
+                                    }
+                                    return(
+                                        <CommandItem key={sidebarOptions.id} className='md:w-[320px] w-full'>
+                                            <Link
+                                                href={sidebarOptions.link}
+                                                className='flex items-center gap-2 hover:bg-transparent rounded-md transition-all md:w-full w-[320px]'
+                                            >
+                                                {val}
+                                                <span>{sidebarOptions.name}</span>
+                                            </Link>
+                                        </CommandItem>
+                                    )
+                                })}
+                            </CommandGroup>
+                        </CommandList>
+                    </Command>
+                </nav>
             </div>
         </SheetContent>
     </Sheet>
