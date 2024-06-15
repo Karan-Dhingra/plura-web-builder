@@ -11,10 +11,16 @@ import {
 import {
   _getTicketsWithAllRelations,
   getAuthUserDetails,
+  // getFunnels,
+  getMedia,
+  getPipelineDetails,
+  // getTicketsWithTags,
   getUserPermissions,
 } from './queries'
 import { db } from './db'
 import { z } from 'zod'
+
+// import Stripe from 'stripe'
 
 export type NotificationWithUser =
   | ({
@@ -60,6 +66,8 @@ export type UsersWithAgencySubAccountPermissionsSidebarOptions =
     typeof __getUsersWithAgencySubAccountPermissionsSidebarOptions
   >
 
+export type GetMediaFiles = Prisma.PromiseReturnType<typeof getMedia>
+
 export type CreateMediaType = Prisma.MediaCreateWithoutSubaccountInput
 
 export type TicketAndTags = Ticket & {
@@ -83,9 +91,15 @@ export const CreateFunnelFormSchema = z.object({
   favicon: z.string().optional(),
 })
 
+export type PipelineDetailsWithLanesCardsTagsTickets = Prisma.PromiseReturnType<
+  typeof getPipelineDetails
+>
+
 export const LaneFormSchema = z.object({
   name: z.string().min(1),
 })
+
+// export type TicketWithTags = Prisma.PromiseReturnType<typeof getTicketsWithTags>
 
 const currencyNumberRegex = /^\d+(\.\d{1,2})?$/
 
@@ -125,5 +139,11 @@ export type StripeCustomerType = {
   shipping: ShippingInfo
   address: Address
 }
+
+// export type PricesList = Stripe.ApiList<Stripe.Price>
+
+// export type FunnelsForSubAccount = Prisma.PromiseReturnType<
+//   typeof getFunnels
+// >[0]
 
 export type UpsertFunnelPage = Prisma.FunnelPageCreateWithoutFunnelInput
