@@ -31,8 +31,6 @@ const PipelineInfoBar = ({ pipelineId, pipelines, subAccountId }: Props) => {
   const [open, setOpen] = React.useState(false)
   const [value, setValue] = React.useState(pipelineId)
 
-  console.log(pipelines)
-
   const handleClickCreatePipeline = () => {
     setOpenModal(
       <CustomModal
@@ -59,7 +57,7 @@ const PipelineInfoBar = ({ pipelineId, pipelines, subAccountId }: Props) => {
               className="w-[200px] justify-between"
             >
               {value
-                ? pipelines?.find((pipeline) => pipeline.id === value)?.name
+                ? pipelines.find((pipeline) => pipeline.id === value)?.name
                 : 'Select a pipeline...'}
               <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
             </Button>
@@ -68,17 +66,18 @@ const PipelineInfoBar = ({ pipelineId, pipelines, subAccountId }: Props) => {
             <Command>
               {/* <CommandEmpty>No pipelines found.</CommandEmpty> */}
               <CommandGroup>
-                {pipelines?.map((pipeline) => (
+                {pipelines.map((pipeline) => (
                   <Link
-                    key={pipeline?.id}
-                    href={``}
-                    // href={`/subaccount/${subAccountId}/pipelines/${pipeline?.id}`}
+                    key={pipeline.id}
+                    href={`/subaccount/${subAccountId}/pipelines/${pipeline.id}`}
                   >
-                    <div className='flex items-center p-2'
-                      onClick={() => {
-                        setValue(pipeline?.id)
+                    <div
+                      key={pipeline.id}
+                      onClick={(currentValue) => {
+                        setValue(pipeline.id)
                         setOpen(false)
                       }}
+                      className={`relative flex cursor-default select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none disabled:pointer-events-none ${pipeline.id === value && 'bg-primary font-bold text-white'} disabled:opacity-50`}
                     >
                       <Check
                         className={cn(
@@ -86,7 +85,7 @@ const PipelineInfoBar = ({ pipelineId, pipelines, subAccountId }: Props) => {
                           value === pipeline.id ? 'opacity-100' : 'opacity-0'
                         )}
                       />
-                      {pipeline?.name}
+                      {pipeline.name}
                     </div>
                   </Link>
                 ))}

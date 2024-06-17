@@ -142,6 +142,8 @@ model Tag {
   subAccountId String
 
   SubAccount SubAccount @relation(fields: [subAccountId], references: [id], onDelete: Cascade)
+  Ticket     Ticket?    @relation(fields: [ticketId], references: [id])
+  ticketId   String?
 
   @@index([subAccountId])
 }
@@ -181,6 +183,8 @@ model Ticket {
   Lane        Lane     @relation(fields: [laneId], references: [id], onDelete: Cascade)
   value       Float?
   description String?
+
+  Tags Tag[]
 
   customerId String?
   Customer   Contact? @relation(fields: [customerId], references: [id], onDelete: SetNull)

@@ -11,9 +11,11 @@ import {
 import {
   _getTicketsWithAllRelations,
   getAuthUserDetails,
+  getFunnels,
   // getFunnels,
   getMedia,
   getPipelineDetails,
+  getTicketsWithTags,
   // getTicketsWithTags,
   getUserPermissions,
 } from './queries'
@@ -99,7 +101,7 @@ export const LaneFormSchema = z.object({
   name: z.string().min(1),
 })
 
-// export type TicketWithTags = Prisma.PromiseReturnType<typeof getTicketsWithTags>
+export type TicketWithTags = Prisma.PromiseReturnType<typeof getTicketsWithTags>
 
 const currencyNumberRegex = /^\d+(\.\d{1,2})?$/
 
@@ -142,8 +144,8 @@ export type StripeCustomerType = {
 
 // export type PricesList = Stripe.ApiList<Stripe.Price>
 
-// export type FunnelsForSubAccount = Prisma.PromiseReturnType<
-//   typeof getFunnels
-// >[0]
+export type FunnelsForSubAccount = Prisma.PromiseReturnType<
+  typeof getFunnels
+>[0]
 
 export type UpsertFunnelPage = Prisma.FunnelPageCreateWithoutFunnelInput
