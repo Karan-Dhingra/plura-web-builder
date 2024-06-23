@@ -1,11 +1,33 @@
+import { getFunnels } from '@/lib/queries'
 import React from 'react'
+import { Plus } from 'lucide-react'
+import BlurPage from '@/components/global/blur-page'
+import FunnelsDataTable from './data-atable'
+import { columns } from './columns'
 
-type Props = {}
+const Funnels = async ({ params }: { params: { subaccountId: string } }) => {
+  const funnels = await getFunnels(params.subaccountId)
+  if (!funnels) return null
 
-const FunnelPage = (props: Props) => {
   return (
-    <div>FunnelPage</div>
+    <BlurPage>
+      <FunnelsDataTable
+        actionButtonText={
+          <>
+            <Plus size={15} />
+            Create Funnel
+          </>
+        }
+        modalChildren={
+          <></>
+          // <FunnelForm subAccountId={params.subaccountId}></FunnelForm>
+        }
+        filterValue="name"
+        columns={columns}
+        data={funnels}
+      />
+    </BlurPage>
   )
 }
 
-export default FunnelPage
+export default Funnels
